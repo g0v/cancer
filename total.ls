@@ -3,6 +3,14 @@ require! <[fs]>
 title-beautify = -> it.replace /十五大癌症第.+位([^-]+)-+按戶籍縣市別統計/g, "$1"
 json = {title:{}, value: {}}
 dirs = fs.readdirSync(\raw/)
+
+convert = (county, town) ->
+  if county in <[台北市 台北縣 台中縣 台南縣 高雄縣]> =>
+    town = town.substring(0,town.length - 1) + "區"
+    if county == \台北縣 => county = \新北市
+    county = county.replace \縣, \市
+  [county, town]
+
 for dir in dirs
   year = parseInt(dir)
   for i from 1 to 15 =>
@@ -27,7 +35,8 @@ for dir in dirs
       region = region.replace /臺/g, "台"
       county = region.substring(0,3)
       town = region.substring(3)
-      town = town.replace /[a-zA-Z ]+/g, ""
+      town = town.replace /[a-zA-Z. ]+/g, ""
+      [county, town] = convert county, town
       json.value.{}[year].{}[i].{}[county][town] = count
 
 fs.write-file-sync \total.json, JSON.stringify(json)

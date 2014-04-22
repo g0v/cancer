@@ -37,7 +37,8 @@ get-file = (files, year, map, count, idx) ->
 download = (idx) ->
   if datasrc.length <= idx => 
     console.log "fetch done."
-    fs.write-file-sync \total.json, JSON.stringify({type,total})
+    # deprecated. run total.ls instead
+    # fs.write-file-sync \total.json, JSON.stringify({type,total})
     return
   console.log "retrieve year: #{datasrc[idx]0}"
   (e,r,b) <- request datasrc[idx]1

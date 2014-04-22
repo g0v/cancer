@@ -14,7 +14,7 @@ build-taiwan = (cb) ->
   # given a dataset and projection func, convert to svg path d parameter
   path = d3.geo.path!projection prj
 
-  svg = d3.select \body .append \svg
+  svg = d3.select \#content .append \svg
     .attr \width w .attr \height h .attr \viewBox "0 0 800 600" .attr \preserveAspectRatio \xMidYMid
 
   # render by individual blocks
@@ -65,4 +65,4 @@ main = ($scope, $interval) ->
     update-value svg, topo, data
     idx := idx + 1
     if idx > 101 => idx := 93
-  , 1000
+  , 100

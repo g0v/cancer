@@ -2,7 +2,8 @@ Cancer 台灣癌症資料專案
 =======================
 
 資料來源: 衛生福利部
-*  http://www.mohw.gov.tw/cht/DOS/Statistic.aspx?f_list_no=312&fod_list_no=4730
+* 癌症統計資料: http://www.mohw.gov.tw/cht/DOS/Statistic.aspx?f_list_no=312&fod_list_no=4730
+* 鄉鎮人口統計: http://sowf.moi.gov.tw/stat/month/m1-10.xls
 
 Usage
 =======================

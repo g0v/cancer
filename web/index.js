@@ -12,7 +12,7 @@ buildTaiwan = function(cb){
     m = [20, 20, 20, 20];
     prj = d3.geo.mercator().center([120.979531, 23.978567]).scale(100000);
     path = d3.geo.path().projection(prj);
-    svg = d3.select('body').append('svg').attr('width', w).attr('height', h).attr('viewBox', "0 0 800 600").attr('preserveAspectRatio', 'xMidYMid');
+    svg = d3.select('#content').append('svg').attr('width', w).attr('height', h).attr('viewBox', "0 0 800 600").attr('preserveAspectRatio', 'xMidYMid');
     svg.selectAll('path.county').data(topo.features).enter().append('path').attr('class', 'county').attr('d', path).style('fill', function(){
       return color(Math.random());
     }).style('stroke', 'none').style('opacity', 0.9);
@@ -66,7 +66,7 @@ main = function($scope, $interval){
         if (idx > 101) {
           return idx = 93;
         }
-      }, 1000);
+      }, 100);
     });
   });
 };

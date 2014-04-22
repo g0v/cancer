@@ -12,13 +12,22 @@ for dir in dirs
     lines = data.split \\n
     title = title-beautify(lines.0.split \, .0)
     json.title.{}[year][i] = title
+    start = 0
     for line in lines
-      if line.index-of(\")!=0 => continue
+      if start!=2 =>
+        if line.index-of("總計")==0 and start == 1 => 
+          start = 2
+          continue
+        else if line.index-of("鄉鎮別")==0 and start==0 => 
+          start = 1
+          continue
+        continue
       line = line.split \,
       [region, count] = [line.0.replace(/"/g,""), parseInt(line.1)]
       region = region.replace /臺/g, "台"
       county = region.substring(0,3)
       town = region.substring(3)
+      town = town.replace /[a-zA-Z ]+/g, ""
       json.value.{}[year].{}[i].{}[county][town] = count
 
 fs.write-file-sync \total.json, JSON.stringify(json)

@@ -1,5 +1,5 @@
 year = start: 93, end: 101
-power = 1
+power = 3
 build-taiwan = (cb) ->
   (data) <- d3.json \twTown1982.topo.json
 

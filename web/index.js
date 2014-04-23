@@ -4,7 +4,7 @@ year = {
   start: 93,
   end: 101
 };
-power = 1;
+power = 3;
 buildTaiwan = function(cb){
   return d3.json('twTown1982.topo.json', function(data){
     var topo, topomesh, color, ref$, w, h, m, prj, path, svg;

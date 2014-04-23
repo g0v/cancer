@@ -9,6 +9,10 @@ convert = (county, town) ->
     town = town.substring(0,town.length - 1) + "區"
     if county == \台北縣 => county = \新北市
     county = county.replace \縣, \市
+  if county=="彰化縣" and town=="溪洲鄉" => town = "溪州鄉"
+  if county=="苗栗縣" and town=="通宵鎮" => town = "通霄鎮"
+  if county=="新竹縣" and town=="峨嵋鄉" => town = "峨眉鄉"
+  town = town.replace /\(.+$/g, ""
   [county, town]
 
 for dir in dirs

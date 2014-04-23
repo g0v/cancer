@@ -1,3 +1,5 @@
+year = start: 93, end: 101
+power = 1
 build-taiwan = (cb) ->
   (data) <- d3.json \twTown1982.topo.json
 
@@ -34,7 +36,9 @@ build-taiwan = (cb) ->
   cb svg, topo
 
 build-data = (cb) ->
-  d3.json \total.json, -> cb it
+  (cancer) <- d3.json \total.json
+  (population) <- d3.json \population.json
+  cb cancer, population
 
 convert = (county, town) ->
   if county in <[台北市 台北縣 台中縣 台南縣 高雄縣]> => 
@@ -43,26 +47,45 @@ convert = (county, town) ->
     county = county.replace \縣, \市
   [county, town]
 
-idx = 93
-update-value = (svg, topo, data) ->
+idx = year.start
+update-desc = ($scope) ->
+  d = $scope.target
+  $scope.desc = "#{d.properties.TOWNNAME} : 肺癌人數 #{d.properties.cancer} / 人口數 #{d.properties.population} = #{d.properties.value}"
+update-value = ($scope, svg, topo, cancer, population) ->
   [min,max] = [-1,-1]
   for it in topo.features
     [county,town] = convert it.properties.COUNTYNAME, it.properties.TOWNNAME
-    it.properties.value = data.value[idx]1[county][town]
+    it.properties.value = cancer.value[idx]1[county][town] / population[idx][county][town]
+    it.properties.cancer = cancer.value[idx]1[county][town]
+    it.properties.population = population[idx][county][town]
     if min == -1 or min > it.properties.value => min = it.properties.value
     if max == -1 or max < it.properties.value => max = it.properties.value
-  color = d3.scale.linear!domain [min,max] .range <[#000 #f00]>
-  frange = d3.scale.linear!domain [min,max] .range [254,255]
-  svg.selectAll \path.county .style \fill, -> 
-    "rgba(#{it.properties.value},0,0,1)"
+  min = min ** power
+  max = max ** power
+  color = d3.scale.linear!domain [0,max/2,max] .range <[#999 #ff0 #f00]>
+  frange = d3.scale.linear!domain [0,max] .range [0,255]
+  #console.log min, max
+  svg.selectAll \path.county
+    .on \mouseover (d) ->
+      $scope.$apply ~> 
+        $scope.target = d
+        update-desc $scope
+    .style \fill, -> 
+      # "rgba(#{it.properties.value},0,0,1)"
+      # console.log it.properties.value, frange(it.properties.value)
+      if isNaN(it.properties.value) => return "rgba(128,128,128,1)"
+      #v = parseInt(color (it.properties.value**3))
+      color (it.properties.value** power)
+      #"rgba(#v,0,0,1)"
 
 main = ($scope, $interval) ->
-  (data) <- build-data
+  (cancer, population) <- build-data
   (svg, topo) <- build-taiwan
 
   $interval ->
     $scope.idx = idx
-    update-value svg, topo, data
+    update-value $scope, svg, topo, cancer, population
     idx := idx + 1
-    if idx > 101 => idx := 93
-  , 100
+    if idx > year.end => idx := year.start
+    update-desc $scope
+  , 500

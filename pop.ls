@@ -25,8 +25,9 @@ for line in lines
   if a in counties =>
     county = a
     continue
-  if not county or !line.4 or  isNaN(line.4) => continue
+  if not county or ((!line.4 or isNaN(line.4)) and (!line.26 or isNaN(line.26))) => continue
   town = line.0
   [county, town] = convert county, town
+  if county=="台南市" => console.log town
   for i from 80 to 102 => hash.{}[i].{}[county][town] = parseInt(line[i - 76])
 fs.write-file-sync \population.json, JSON.stringify(hash)

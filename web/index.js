@@ -4,7 +4,7 @@ year = {
   start: 93,
   end: 101
 };
-power = 3;
+power = 1;
 buildTaiwan = function(cb){
   return d3.json('twTown1982.topo.json', function(data){
     var topo, topomesh, color, ref$, w, h, m, prj, path, svg;
@@ -21,7 +21,7 @@ buildTaiwan = function(cb){
     svg.selectAll('path.county').data(topo.features).enter().append('path').attr('class', 'county').attr('d', path).style('fill', function(){
       return color(Math.random());
     }).style('stroke', 'none').style('opacity', 0.9);
-    svg.append('path').attr('class', 'boundary').datum(topomesh).attr('d', path).style('fill', 'none').style('stroke', "rgba(0,0,0,0.5)").style('stroke-width', '1px');
+    svg.append('path').attr('class', 'boundary').datum(topomesh).attr('d', path).style('fill', 'none').style('stroke', "rgba(255,255,255,0.5)").style('stroke-width', '2px');
     return cb(svg, topo);
   });
 };
@@ -66,7 +66,7 @@ updateValue = function($scope, svg, topo, cancer, population){
   }
   min = Math.pow(min, power);
   max = Math.pow(max, power);
-  color = d3.scale.linear().domain([0, max / 2, max]).range(['#999', '#ff0', '#f00']);
+  color = d3.scale.linear().domain([0, max / 2, max]).range(['#777', '#ff0', '#f00']);
   frange = d3.scale.linear().domain([0, max]).range([0, 255]);
   return svg.selectAll('path.county').on('mouseover', function(d){
     var this$ = this;
@@ -76,7 +76,7 @@ updateValue = function($scope, svg, topo, cancer, population){
     });
   }).style('fill', function(it){
     if (isNaN(it.properties.value)) {
-      return "rgba(128,128,128,1)";
+      return "rgba(255,255,255,1)";
     }
     return color(Math.pow(it.properties.value, power));
   });

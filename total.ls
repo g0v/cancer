@@ -1,7 +1,7 @@
 require! <[fs]>
 
 title-beautify = -> it.replace /十五大癌症第.+位([^-]+)-+按戶籍縣市別統計/g, "$1"
-json = {title:{}, value: {}}
+json = {title:{}, value: {}, total:{}}
 dirs = fs.readdirSync(\raw/)
 
 convert = (county, town) ->
@@ -17,6 +17,7 @@ convert = (county, town) ->
 
 for dir in dirs
   year = parseInt(dir)
+  total = {}
   for i from 1 to 15 =>
     data = fs.read-file-sync "raw/#dir/#i.csv" .toString!
     data = data.replace /"(.+)\n(.+)"/g, '"$1"'
@@ -40,7 +41,12 @@ for dir in dirs
       county = region.substring(0,3)
       town = region.substring(3)
       town = town.replace /[a-zA-Z. ]+/g, ""
+      if !county => continue
       [county, town] = convert county, town
       json.value.{}[year].{}[i].{}[county][town] = count
+      if !total.{}[county][town] => total.{}[county][town] = 0
+      total.{}[county][town] += count
+  json.total[year] = total
+  json.value
 
 fs.write-file-sync \total.json, JSON.stringify(json)

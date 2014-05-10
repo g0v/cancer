@@ -1,5 +1,5 @@
 year = start: 93, end: 101
-power = 3
+power = 1
 build-taiwan = (cb) ->
   (data) <- d3.json \twTown1982.topo.json
 
@@ -31,8 +31,9 @@ build-taiwan = (cb) ->
   svg.append \path .attr \class \boundary .datum topomesh
     .attr \d path
     .style \fill \none
-    .style \stroke "rgba(0,0,0,0.5)"
-    .style \stroke-width \1px
+    #.style \stroke "rgba(0,0,0,0.5)"
+    .style \stroke "rgba(255,255,255,0.5)"
+    .style \stroke-width \2px
   cb svg, topo
 
 build-data = (cb) ->
@@ -62,7 +63,7 @@ update-value = ($scope, svg, topo, cancer, population) ->
     if max == -1 or max < it.properties.value => max = it.properties.value
   min = min ** power
   max = max ** power
-  color = d3.scale.linear!domain [0,max/2,max] .range <[#999 #ff0 #f00]>
+  color = d3.scale.linear!domain [0, max/2 ,max] .range <[#777 #ff0 #f00]>
   frange = d3.scale.linear!domain [0,max] .range [0,255]
   #console.log min, max
   svg.selectAll \path.county
@@ -73,7 +74,7 @@ update-value = ($scope, svg, topo, cancer, population) ->
     .style \fill, -> 
       # "rgba(#{it.properties.value},0,0,1)"
       # console.log it.properties.value, frange(it.properties.value)
-      if isNaN(it.properties.value) => return "rgba(128,128,128,1)"
+      if isNaN(it.properties.value) => return "rgba(255,255,255,1)"
       #v = parseInt(color (it.properties.value**3))
       color (it.properties.value** power)
       #"rgba(#v,0,0,1)"

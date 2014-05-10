@@ -4,27 +4,39 @@ convert-json = (infile, outfile) ->
   csv = fs.read-file-sync infile .toString!
   lines = csv.replace(/"(.+)\n(.+)"/g, '"$1$2"')split(\\n)filter(-> it.replace(/,/g, "")trim!)
   year = 0
+  start = -1
+  dis-val = {}
   for line in lines
     ret = /(\d+)年,/exec line
     if ret => 
       year = parseInt ret.1
+      start = -1
       continue
     ret = /診斷年齡,/exec line
+    cells = line.split \,
     if ret =>
-      cells = line.split \,
       dis-idx = q: {}, p: {}
       dis-list = []
-      start = false
+      start = -1
       for i from 0 til cells.length => 
         if !cells[i] => continue
         if cells[i]==\診斷年齡 => 
-          start = true
+          start = i
           continue
-        if !start => continue
+        if start==-1 => continue
         dis-idx.q[cells[i]] = i
         dis-idx.p[i] = cells[i]
         dis-list.push cells[i]
-      console.log dis-list
+      dis-val-cur = dis-val[year] = {}
+      continue
+    if !start => continue
+    ret = /(\d+)~\d+/exec cells[start]
+    if !ret => continue
+    age = ret.1
+    for dis in dis-list
+      dis-val-cur.{}[dis][age] = parseInt(cells[dis-idx.q[dis]] or 0)
+  fs.write-file-sync outfile, JSON.stringify(dis-val)
+
 convert-csv = (infile, outfile) ->
   xls = xlsjs.read-file infile
   sheet = xls.Sheets[xls.SheetNames.0]

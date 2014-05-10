@@ -17,7 +17,7 @@ for file in files
   ret = /(CRA_\d+)\.json/g.exec file
   if !ret => continue
   name = town.town[ret.1]
-  if !name => continue
+  if isNaN(name) => continue
   json = JSON.parse(fs.read-file-sync file .toString!)
   for year of json
     for type of json[year]

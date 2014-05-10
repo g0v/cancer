@@ -21,8 +21,9 @@ for file in files
   for year of json
     for type of json[year]
       sum = [v for k,v of json[year][type]]reduce ((a,b) -> a + b), 0
-    data.{}[year].{}[type][name] = sum
-    types[type] = true
+      types[type] = true
+      data.{}[year].{}[type][name] = sum
 
 types = [t for t of types]
+console.log types.join("\n")
 fs.write-file-sync \all-data.json, JSON.stringify({townmap, data, types})

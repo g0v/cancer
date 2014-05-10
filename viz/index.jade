@@ -17,11 +17,13 @@ html(lang="en")
     script(type="text/javascript",src="canvg.js")
     script(type="text/javascript",src="index.js")
   body(ng-app,ng-controller="main")
+    .title
+      全台各鄉鎮癌症個案數資料開放
     .row
       .col-md-6
         svg#svg(width="800px",height="600px",viewBox="0 0 800 600",preserveAspectRatio="xMidYMid")
       .col-md-6
-        #chosen {{chosen}}
+        #chosen {{chosen}} / {{ chosenValue }}
         form.form-inline
           .btn.btn-default(ng-click="play()") play
           .btn.btn-default(ng-click="stop()") stop
@@ -31,3 +33,6 @@ html(lang="en")
           .form-group
             select.form-control(ng-model="curdis",style="min-width:300px")
               option(ng-repeat="d in diseases",value="{{d}}") {{d}}
+        br
+        | 資料驗證中, 可能有錯誤, 若有發現問題請回饋至 
+        a(href="https://github.com/g0v/cancer/issues") 這裡

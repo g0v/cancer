@@ -53,15 +53,22 @@ main = function($scope, $timeout, $interval){
       return $scope.updateData();
     });
     return d3.json('rpi.json', function(rpi){
+      $scope.$watch('chosen', function(){
+        return $scope.chosenValue = $scope.hash[$scope.chosen];
+      });
+      $scope.$watch('chosen', function(){
+        return $scope.chosenValue = $scope.hash[$scope.chosen];
+      });
       $scope.cancerData = function(map){
-        var d, hash, k, v;
+        var d, k, v;
         d = cancer.data[$scope.curyear][$scope.curdis] || {};
-        hash = {};
+        $scope.hash = {};
         for (k in d) {
           v = d[k];
-          hash[cancer.townmap[parseInt(k)]] = v;
+          $scope.hash[cancer.townmap[parseInt(k)]] = v;
         }
-        return hash;
+        $scope.chosenValue = $scope.hash[$scope.chosen];
+        return $scope.hash;
       };
       $scope.randomData = function(map){
         var ret, i$, ref$, len$, item;
@@ -168,7 +175,7 @@ main = function($scope, $timeout, $interval){
             return it.properties.c;
           }).style('stroke', function(it){
             return it.properties.c;
-          }).style('stroke-width', '0.5px').style('opacity', 1.0).on('click', function(d){
+          }).style('stroke-width', '0.5px').style('opacity', 1.0).on('mouseover', function(d){
             return $scope.$apply(function(){
               return $scope.chosen = d.properties.name;
             });

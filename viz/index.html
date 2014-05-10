@@ -21,12 +21,13 @@
     <script type="text/javascript" src="index.js"></script>
   </head>
   <body ng-app ng-controller="main">
+    <div class="title">全台各鄉鎮癌症個案數資料開放</div>
     <div class="row">
       <div class="col-md-6">
         <svg id="svg" width="800px" height="600px" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid"></svg>
       </div>
       <div class="col-md-6">
-        <div id="chosen">{{chosen}}</div>
+        <div id="chosen">{{chosen}} / {{ chosenValue }}</div>
         <form class="form-inline">
           <div ng-click="play()" class="btn btn-default">play</div>
           <div ng-click="stop()" class="btn btn-default">stop</div>
@@ -40,7 +41,7 @@
               <option ng-repeat="d in diseases" value="{{d}}">{{d}}</option>
             </select>
           </div>
-        </form>
+        </form><br>資料驗證中, 可能有錯誤, 若有發現問題請回饋至 <a href="https://github.com/g0v/cancer/issues">這裡</a>
       </div>
     </div>
   </body>

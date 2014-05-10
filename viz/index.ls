@@ -27,11 +27,14 @@ main = ($scope, $timeout, $interval) ->
   $scope.$watch 'curyear', -> $scope.update-data!
   $scope.$watch 'curdis', -> $scope.update-data!
   (rpi) <- d3.json \rpi.json
+  $scope.$watch 'chosen' -> $scope.chosen-value = $scope.hash[$scope.chosen]
+  $scope.$watch 'chosen' -> $scope.chosen-value = $scope.hash[$scope.chosen]
   $scope.cancer-data = (map) ->
     d = cancer.data[$scope.curyear][$scope.curdis] or {}
-    hash = {}
-    for k,v of d => hash[cancer.townmap[parseInt(k)]] = v
-    hash
+    $scope.hash = {}
+    for k,v of d => $scope.hash[cancer.townmap[parseInt(k)]] = v
+    $scope.chosen-value = $scope.hash[$scope.chosen]
+    $scope.hash
   $scope.random-data = (map) ->
     ret = {}
     for item in map.topo.features
@@ -108,7 +111,7 @@ main = ($scope, $timeout, $interval) ->
       .style \stroke -> it.properties.c
       .style \stroke-width \0.5px
       .style \opacity 1.0
-      .on \click (d) -> $scope.$apply -> $scope.chosen = d.properties.name
+      .on \mouseover (d) -> $scope.$apply -> $scope.chosen = d.properties.name
     heatrange = <[#494 #6c0 #ff0 #f00]>
     heatmap = d3.scale.linear!domain [0,1,2,5] .range heatrange
     tickcount = 10
@@ -122,7 +125,3 @@ main = ($scope, $timeout, $interval) ->
       data = $scope.cancer-data $scope.map
       $scope.update-map $scope.map, data
     ), 1000
-    /*$interval (-> 
-      data = $scope.random-data $scope.map
-      $scope.update-map $scope.map, data
-    ), 600*/

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head prefix="og: http://ogp.me/ns#">
+    <meta charset="utf-8">
+    <title>template</title>
+    <!-- libraries-->
+    <script type="text/javascript" src="assets/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/d3js/3.0.8/d3.v3.min.js"></script>
+    <script type="text/javascript" src="assets/angular/1.2.3/angular.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/bootstrap/3.0.2/css/bootstrap.min.css">
+    <script type="text/javascript" src="assets/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+    <!-- custom files-->
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script type="text/javascript" src="topojson.js"></script>
+    <script type="text/javascript" src="canvg.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+  </head>
+  <body ng-app ng-controller="main">
+    <div class="row">
+      <div class="col-md-6">
+        <svg id="svg" width="800px" height="600px" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid"></svg>
+      </div>
+      <div class="col-md-6">
+        <div id="chosen">{{chosen}}</div>
+        <form class="form-inline">
+          <div ng-click="play()" class="btn btn-default">play</div>
+          <div ng-click="stop()" class="btn btn-default">stop</div>
+          <div class="form-group">
+            <select ng-model="curyear" class="form-control">
+              <option ng-repeat="y in years" value="{{y}}">{{y}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <select ng-model="curdis" style="min-width:300px" class="form-control">
+              <option ng-repeat="d in diseases" value="{{d}}">{{d}}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

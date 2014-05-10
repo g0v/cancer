@@ -1,0 +1,33 @@
+doctype html
+//- basic libraries: jquery(1.10.2), d3js(3.3.11), angularjs(1.2.3), bootstrap(3.0)/semantic-ui(0.9.3/0.9.5)
+- var usecdn = false
+- var useog = false
+- var lib = { jquery: true, d3js: true, angular: true, bootstrap: true, semantic: false }
+- var assets = "assets"
+- var thumbnail = "http://dummy.thumbnail"
+html(lang="en")
+  head(prefix="og: http://ogp.me/ns#")
+    meta(charset="utf-8")
+    title template
+    // libraries
+    include library.jade
+    // custom files
+    link(rel="stylesheet",type="text/css",href="index.css")
+    script(type="text/javascript",src="topojson.js")
+    script(type="text/javascript",src="canvg.js")
+    script(type="text/javascript",src="index.js")
+  body(ng-app,ng-controller="main")
+    .row
+      .col-md-6
+        svg#svg(width="800px",height="600px",viewBox="0 0 800 600",preserveAspectRatio="xMidYMid")
+      .col-md-6
+        #chosen {{chosen}}
+        form.form-inline
+          .btn.btn-default(ng-click="play()") play
+          .btn.btn-default(ng-click="stop()") stop
+          .form-group
+            select.form-control(ng-model="curyear")
+              option(ng-repeat="y in years",value="{{y}}") {{y}}
+          .form-group
+            select.form-control(ng-model="curdis",style="min-width:300px")
+              option(ng-repeat="d in diseases",value="{{d}}") {{d}}

@@ -2,8 +2,10 @@ main = ($scope, $timeout, $interval) ->
   $scope.chosen = "尚未選取"
   (cancer) <- d3.json \all-data.json
   $scope.years = [k for k of cancer.data]
+  $scope.diseases = cancer.types
+  console.log $scope.diseases
   $scope.curyear = $scope.years.0
-  $scope.diseases = []
+  $scope.curdis = $scope.diseases.0
   $scope.playing = false
   $scope.year-index = 0
   $scope.stop = ->
@@ -22,11 +24,7 @@ main = ($scope, $timeout, $interval) ->
   $scope.update-data = ->
     data = $scope.cancer-data $scope.map
     $scope.update-map $scope.map, data
-  $scope.$watch 'curyear', ->
-    $scope.diseases = [k for k of cancer.data[$scope.curyear]]
-    if !$scope.curdis =>
-      $scope.curdis = $scope.diseases.0
-    else $scope.update-data!
+  $scope.$watch 'curyear', -> $scope.update-data!
   $scope.$watch 'curdis', -> $scope.update-data!
   (rpi) <- d3.json \rpi.json
   $scope.cancer-data = (map) ->
@@ -46,8 +44,8 @@ main = ($scope, $timeout, $interval) ->
         v = data[it.properties.name]
         if v and (min == -1 or min > v) => min := v
         it.properties.value = v or 0
-
-    max = d3.max(map.topo.features, (-> it.properties.value))
+    max = d3.max(map.topo.features, (-> it.properties.value)) >? 5
+    min = min >? 1
     map.heatmap = d3.scale.linear!domain [0, min, (min*2 + max)/2, max] .range map.heatrange
     towns.transition!duration 300 .style do
       fill: -> map.heatmap it.properties.value

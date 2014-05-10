@@ -10,6 +10,7 @@ for k,v of town.town
 
 files = ["json/#f" for f in fs.readdir-sync(\json)]
 data = {}
+types = {}
 for file in files
   if not /\.json$/exec(file) => continue
   ret = /(CRA_\d+)\.json/g.exec file
@@ -21,5 +22,7 @@ for file in files
     for type of json[year]
       sum = [v for k,v of json[year][type]]reduce ((a,b) -> a + b), 0
     data.{}[year].{}[type][name] = sum
+    types[type] = true
 
-fs.write-file-sync \all-data.json, JSON.stringify({townmap, data})
+types = [t for t of types]
+fs.write-file-sync \all-data.json, JSON.stringify({townmap, data, types})

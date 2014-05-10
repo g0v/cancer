@@ -2,7 +2,7 @@ require! <[fs]>
 lines = fs.read-file-sync \town.raw .toString!split \\n
 map = county: {}, town: {}
 
-patch = <[台北市 新北市 台中市 高雄市 臺南市]>
+patch = <[台北市 新北市 台中市 高雄市 台南市]>
 counties = {}
 for line in lines
   line = line.replace(/\(.+?\)/g, "")split " "

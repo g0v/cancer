@@ -83,6 +83,9 @@ main = ($scope, $timeout, $interval) ->
     (data) <- d3.json \twTown1982.topo.json
     ret = {}
     topo = topojson.feature data, data.objects["twTown1982.geo"]
+    topo.features.map ->
+      it.properties.TOWNNAME = it.properties.TOWNNAME.replace /\(.+\)/g, ""
+      it.properties.name = it.properties.name.replace /\(.+\)/g, ""
     prj2 = d3.geo.mercator!center [120.979531, 23.978567] .scale 50000
     prj = ([x,y]) ->
       if x<119 => x += 1

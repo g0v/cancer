@@ -141,6 +141,10 @@ main = function($scope, $timeout, $interval){
           var ret, topo, prj2, prj, path, svg, color, town, ref$, r, g, b, i$, len$, item, c, heatrange, heatmap, tickcount;
           ret = {};
           topo = topojson.feature(data, data.objects["twTown1982.geo"]);
+          topo.features.map(function(it){
+            it.properties.TOWNNAME = it.properties.TOWNNAME.replace(/\(.+\)/g, "");
+            return it.properties.name = it.properties.name.replace(/\(.+\)/g, "");
+          });
           prj2 = d3.geo.mercator().center([120.979531, 23.978567]).scale(50000);
           prj = function(arg$){
             var x, y;

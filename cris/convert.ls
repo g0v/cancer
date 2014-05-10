@@ -1,6 +1,7 @@
 require! <[fs]>
  
 town = JSON.parse(fs.read-file-sync \town.json .toString!)
+population = JSON.parse(fs.read-file-sync \../population.json .toString!)
 townmap = []
 count = 0
 for k,v of town.town => townmap.push v
@@ -24,6 +25,19 @@ for file in files
       types[type] = true
       data.{}[year].{}[type][name] = sum
 
-types = [t for t of types]
-console.log types.join("\n")
+for year of data
+  sum = {}
+  for type of data[year]
+    for name of data[year][type]
+      if !sum[name] => sum[name] = 0
+      sum[name] += data[year][type][name]
+  for name of sum
+    [c,t] = townmap[name].split("/")
+    data[year].{}["總計"][name] = sum[name]
+    p = population[parseInt(year) - 1911]
+    if p => 
+      data[year].{}["比例"][name] = parseInt(1000 * sum[name] / p[c][t]) / 10
+
+types = [t for t of types] ++ <[比例 總計]>
+
 fs.write-file-sync \all-data.json, JSON.stringify({townmap, data, types})

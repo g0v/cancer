@@ -142,8 +142,8 @@ main = function($scope, $timeout, $interval){
           ret = {};
           topo = topojson.feature(data, data.objects["twTown1982.geo"]);
           topo.features.map(function(it){
-            it.properties.TOWNNAME = it.properties.TOWNNAME.replace(/\(.+\)/g, "");
-            return it.properties.name = it.properties.name.replace(/\(.+\)/g, "");
+            it.properties.TOWNNAME = it.properties.TOWNNAME.replace(/\(.+\)?\s*$/g, "");
+            return it.properties.name = it.properties.name.replace(/\s*\(.+\)?\s*$/g, "");
           });
           prj2 = d3.geo.mercator().center([120.979531, 23.978567]).scale(50000);
           prj = function(arg$){

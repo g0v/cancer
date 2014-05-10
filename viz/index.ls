@@ -84,8 +84,8 @@ main = ($scope, $timeout, $interval) ->
     ret = {}
     topo = topojson.feature data, data.objects["twTown1982.geo"]
     topo.features.map ->
-      it.properties.TOWNNAME = it.properties.TOWNNAME.replace /\(.+\)/g, ""
-      it.properties.name = it.properties.name.replace /\(.+\)/g, ""
+      it.properties.TOWNNAME = it.properties.TOWNNAME.replace /\(.+\)?\s*$/g, ""
+      it.properties.name = it.properties.name.replace /\s*\(.+\)?\s*$/g, ""
     prj2 = d3.geo.mercator!center [120.979531, 23.978567] .scale 50000
     prj = ([x,y]) ->
       if x<119 => x += 1

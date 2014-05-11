@@ -25,3 +25,14 @@ svg {
   color: white;
   font-size: 48px;
   text-align: center; }
+
+.form-inline {
+  margin: 10px; }
+  .form-inline .btn, .form-inline .form-group {
+    margin-top: 5px; }
+
+.note {
+  padding: 10px;
+  text-align: center;
+  background: #f4f4f4;
+  color: red; }

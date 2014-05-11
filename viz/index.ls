@@ -1,9 +1,9 @@
 main = ($scope, $timeout, $interval) ->
-  $scope.chosen = "尚未選取"
+  $scope.chosen = "點地圖看值"
+  (popu) <- d3.json \population.json
   (cancer) <- d3.json \all-data.json
   $scope.years = [k for k of cancer.data]
   $scope.diseases = cancer.types
-  console.log $scope.diseases
   $scope.curyear = $scope.years.0
   $scope.curdis = $scope.diseases.0
   $scope.playing = false
@@ -44,20 +44,28 @@ main = ($scope, $timeout, $interval) ->
     min = -1
     towns = map.svg.selectAll \path.town
       .each -> 
-        v = data[it.properties.name]
+        v = data[it.properties.name] or 0
+        it.properties.value = v
+        [c,t] = it.properties.name.split \/
+        mgyear = parseInt($scope.curyear) - 1911
+        p = if popu[mgyear] => popu[mgyear][c][t] else 0
+        it.properties.nvalue = if p => parseInt(100000 * v / p)/1000 else 0
+        v = if $scope.normalize =>  it.properties.nvalue else it.properties.value
         if v and (min == -1 or min > v) => min := v
-        it.properties.value = v or 0
-    max = d3.max(map.topo.features, (-> it.properties.value)) >? 5
-    min = min >? 1
+        #if popu[mgyear] => console.log popu[mgyear][c][t], v, p, it.properties.nvalue
+    max = d3.max(map.topo.features, (-> if $scope.normalize => it.properties.nvalue else it.properties.value)) >? 0.5
+    min = min >? 0.2 <?max - 0.1
     map.heatmap = d3.scale.linear!domain [0, min, (min*2 + max)/2, max] .range map.heatrange
     towns.transition!duration 300 .style do
-      fill: -> map.heatmap it.properties.value
-      stroke: -> map.heatmap it.properties.value
+      fill: -> map.heatmap if $scope.normalize => it.properties.nvalue else it.properties.value
+      stroke: -> map.heatmap if $scope.normalize => it.properties.nvalue else it.properties.value
     $scope.make-tick map
 
   $scope.make-tick = (map) ->
     {svg, heatmap, tickcount} = map
     htick = heatmap.ticks tickcount
+    domain = heatmap.domain!
+    htick = [parseInt(10*i)/10 for i from 0 to domain[* - 1] by domain[* - 1]/10]
     svg.selectAll \rect.tick .data htick 
       ..exit!remove!
       ..enter!append \rect

@@ -23,10 +23,10 @@
   <body ng-app ng-controller="main">
     <div class="title">全台各鄉鎮癌症個案數資料開放</div>
     <div class="row">
-      <div class="col-md-6">
-        <svg id="svg" width="800px" height="600px" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid"></svg>
+      <div class="col-sm-6">
+        <svg id="svg" width="100%" height="600px" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid"></svg>
       </div>
-      <div class="col-md-6">
+      <div class="col-sm-6">
         <div id="chosen">{{chosen}} / {{ chosenValue }}</div>
         <form class="form-inline">
           <div ng-click="play()" class="btn btn-default">play</div>
@@ -40,9 +40,29 @@
             <select ng-model="curdis" style="min-width:300px" class="form-control">
               <option ng-repeat="d in diseases" value="{{d}}">{{d}}</option>
             </select>
+          </div><br>
+          <div style="margin-top:10px" class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="normalize"> normalize
+            </label>
           </div>
-        </form><br>資料驗證中, 可能有錯誤, 若有發現問題請回饋至 <a href="https://github.com/g0v/cancer/issues">這裡</a>
+        </form><br>
+        <h3 style="font-family:'century gothic'">
+          <div class="note">請注意</div>除錯中，可能有錯，若發現問題請回饋至 <a href="https://github.com/g0v/cancer/issues">這裡</a>
+        </h3><br>
+        <hr>
+        <div data-href="http://g0v.github.io/cancer/viz/" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true" class="fb-like"></div>
       </div>
     </div>
+    <div id="fb-root"></div>
+    <script>
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/zh_TW/all.js#xfbml=1&appId=538062799648166";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
   </body>
 </html>

@@ -15,6 +15,26 @@ main = function($scope, $timeout, $interval){
     $scope.curdis = $scope.diseases[0];
     $scope.playing = false;
     $scope.yearIndex = 0;
+    $scope.getDataBoundary = function(cancerType){
+      var year, ts, d, v;
+      $scope.maxBound = d3.max([d3.max((function(){
+        var ref$, results$ = [];
+        for (year in ref$ = cancer.data) {
+          ts = ref$[year];
+          results$.push(d3.max((fn$())));
+        }
+        return results$;
+        function fn$(){
+          var ref$, results$ = [];
+          for (d in ref$ = ts[cancerType]) {
+            v = ref$[d];
+            results$.push(v);
+          }
+          return results$;
+        }
+      }()))]);
+      $scope.minBound = 0;
+    };
     $scope.stop = function(){
       if ($scope.playing) {
         $interval.cancel($scope.playing);
@@ -44,6 +64,7 @@ main = function($scope, $timeout, $interval){
     $scope.updateData = function(){
       var data;
       data = $scope.cancerData($scope.map);
+      $scope.getDataBoundary($scope.curdis);
       return $scope.updateMap($scope.map, data);
     };
     $scope.$watch('curyear', function(){
@@ -73,7 +94,7 @@ main = function($scope, $timeout, $interval){
         return ret;
       };
       $scope.updateMap = function(map, data){
-        var min, towns, max, ref$;
+        var min, towns, max;
         min = -1;
         towns = map.svg.selectAll('path.town').each(function(it){
           var v;
@@ -83,9 +104,7 @@ main = function($scope, $timeout, $interval){
           }
           return it.properties.value = v || 0;
         });
-        max = (ref$ = d3.max(map.topo.features, function(it){
-          return it.properties.value;
-        })) > 5 ? ref$ : 5;
+        max = $scope.maxBound;
         min = min > 1 ? min : 1;
         map.heatmap = d3.scale.linear().domain([0, min, (min * 2 + max) / 2, max]).range(map.heatrange);
         towns.transition().duration(300).style({

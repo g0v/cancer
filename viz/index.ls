@@ -8,6 +8,10 @@ main = ($scope, $timeout, $interval) ->
   $scope.curdis = $scope.diseases.0
   $scope.playing = false
   $scope.year-index = 0
+
+  $scope.get-data-boundary = (cancer-type) !->
+    $scope.max-bound = d3.max [d3.max [d3.max [v for d,v of ts[cancer-type]] for year, ts of cancer.data]]
+    $scope.min-bound = 0
   $scope.stop = ->
     if $scope.playing => $interval.cancel $scope.playing
     $scope.playing = false
@@ -23,6 +27,7 @@ main = ($scope, $timeout, $interval) ->
     , 200
   $scope.update-data = ->
     data = $scope.cancer-data $scope.map
+    $scope.get-data-boundary $scope.curdis
     $scope.update-map $scope.map, data
   $scope.$watch 'curyear', -> $scope.update-data!
   $scope.$watch 'curdis', -> $scope.update-data!
@@ -44,7 +49,8 @@ main = ($scope, $timeout, $interval) ->
         v = data[it.properties.name]
         if v and (min == -1 or min > v) => min := v
         it.properties.value = v or 0
-    max = d3.max(map.topo.features, (-> it.properties.value)) >? 5
+    #max = d3.max(map.topo.features, (-> it.properties.value)) >? 5
+    max = $scope.max-bound
     min = min >? 1
     map.heatmap = d3.scale.linear!domain [0, min, (min*2 + max)/2, max] .range map.heatrange
     towns.transition!duration 300 .style do

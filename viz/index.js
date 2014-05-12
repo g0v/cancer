@@ -21,6 +21,12 @@ main = function($scope, $timeout, $interval){
         }
         return $scope.playing = false;
       };
+      $scope.$watch('slower', function(){
+        if ($scope.playing) {
+          $scope.stop();
+          return $scope.play();
+        }
+      });
       $scope.play = function(){
         var i$, to$, i;
         if ($scope.playing) {
@@ -43,7 +49,7 @@ main = function($scope, $timeout, $interval){
             }
           } while ($scope.curyear < 1991 && $scope.normalize);
           return results$;
-        }, 200);
+        }, $scope.slower ? 600 : 200);
       };
       $scope.updateData = function(){
         var data;

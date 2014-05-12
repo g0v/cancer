@@ -11,6 +11,11 @@ main = ($scope, $timeout, $interval) ->
   $scope.stop = ->
     if $scope.playing => $interval.cancel $scope.playing
     $scope.playing = false
+  $scope.$watch 'slower' ->
+    if $scope.playing =>
+      $scope.stop!
+      $scope.play!
+
   $scope.play = ->
     if $scope.playing => return
     for i from 0 til $scope.years.length => if $scope.years[i]==$scope.curyear => 
@@ -22,7 +27,7 @@ main = ($scope, $timeout, $interval) ->
         $scope.year-index++
         if $scope.year-index >= $scope.years.length => $scope.year-index = 0
       while $scope.curyear <1991 and $scope.normalize
-    , 200
+    , if $scope.slower => 600 else 200
   $scope.update-data = ->
     data = $scope.cancer-data $scope.map
     $scope.update-map $scope.map, data

@@ -9,7 +9,7 @@ for k,v of town.town
   town.town[k] = count
   count++
 
-files = ["json/age/#f" for f in fs.readdir-sync(\json)]
+files = ["json/age/#f" for f in fs.readdir-sync(\json/age)]
 data = {}
 types = {}
 for file in files
@@ -35,9 +35,9 @@ for year of data
     [c,t] = townmap[name].split("/")
     data[year].{}["總計"][name] = sum[name]
     p = population[parseInt(year) - 1911]
-    if p => 
-      data[year].{}["比例"][name] = parseInt(1000 * sum[name] / p[c][t]) / 10
+    #if p => 
+    #  data[year].{}["比例"][name] = parseInt(1000 * sum[name] / p[c][t]) / 10
 
-types = [t for t of types] ++ <[比例 總計]>
+types = [t for t of types] ++ <[總計]>
 
 fs.write-file-sync \all-data.json, JSON.stringify({townmap, data, types})

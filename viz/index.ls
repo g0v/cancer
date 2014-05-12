@@ -123,6 +123,7 @@ main = ($scope, $timeout, $interval) ->
       .style \stroke-width \0.5px
       .style \opacity 1.0
       .on \mouseover (d) -> $scope.$apply -> $scope.chosen = d.properties.name
+      .on \click (d) -> $scope.$apply -> $scope.chosen = d.properties.name
     heatrange = <[#494 #6c0 #ff0 #f00]>
     heatmap = d3.scale.linear!domain [0,1,2,5] .range heatrange
     tickcount = 10

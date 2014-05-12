@@ -205,6 +205,10 @@ main = function($scope, $timeout, $interval){
               return $scope.$apply(function(){
                 return $scope.chosen = d.properties.name;
               });
+            }).on('click', function(d){
+              return $scope.$apply(function(){
+                return $scope.chosen = d.properties.name;
+              });
             });
             heatrange = ['#494', '#6c0', '#ff0', '#f00'];
             heatmap = d3.scale.linear().domain([0, 1, 2, 5]).range(heatrange);

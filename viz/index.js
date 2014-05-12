@@ -64,13 +64,13 @@ main = function($scope, $timeout, $interval){
     $scope.updateData = function(){
       var data;
       data = $scope.cancerData($scope.map);
-      $scope.getDataBoundary($scope.curdis);
       return $scope.updateMap($scope.map, data);
     };
     $scope.$watch('curyear', function(){
       return $scope.updateData();
     });
     $scope.$watch('curdis', function(){
+      $scope.getDataBoundary($scope.curdis);
       return $scope.updateData();
     });
     return d3.json('rpi.json', function(rpi){

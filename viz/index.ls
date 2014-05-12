@@ -27,10 +27,11 @@ main = ($scope, $timeout, $interval) ->
     , 200
   $scope.update-data = ->
     data = $scope.cancer-data $scope.map
-    $scope.get-data-boundary $scope.curdis
     $scope.update-map $scope.map, data
   $scope.$watch 'curyear', -> $scope.update-data!
-  $scope.$watch 'curdis', -> $scope.update-data!
+  $scope.$watch 'curdis', -> 
+    $scope.get-data-boundary $scope.curdis
+    $scope.update-data!
   (rpi) <- d3.json \rpi.json
   $scope.cancer-data = (map) ->
     d = cancer.data[$scope.curyear][$scope.curdis] or {}

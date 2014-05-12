@@ -34,11 +34,15 @@ main = function($scope, $timeout, $interval){
           }
         }
         return $scope.playing = $interval(function(){
-          $scope.curyear = $scope.years[$scope.yearIndex];
-          $scope.yearIndex++;
-          if ($scope.yearIndex >= $scope.years.length) {
-            return $scope.yearIndex = 0;
-          }
+          var results$ = [];
+          do {
+            $scope.curyear = $scope.years[$scope.yearIndex];
+            $scope.yearIndex++;
+            if ($scope.yearIndex >= $scope.years.length) {
+              results$.push($scope.yearIndex = 0);
+            }
+          } while ($scope.curyear < 1991 && $scope.normalize);
+          return results$;
         }, 200);
       };
       $scope.updateData = function(){
@@ -80,7 +84,7 @@ main = function($scope, $timeout, $interval){
           return ret;
         };
         $scope.updateMap = function(map, data){
-          var min, towns, max, ref$, ref1$;
+          var min, towns, max;
           min = -1;
           towns = map.svg.selectAll('path.town').each(function(it){
             var v, ref$, c, t, mgyear, p;
@@ -89,6 +93,9 @@ main = function($scope, $timeout, $interval){
             ref$ = it.properties.name.split('/'), c = ref$[0], t = ref$[1];
             mgyear = parseInt($scope.curyear) - 1911;
             p = popu[mgyear] ? popu[mgyear][c][t] : 0;
+            if (t === "中西區" && !p && popu[mgyear]) {
+              p = popu[mgyear][c]["中區"] + popu[mgyear][c]["西區"];
+            }
             it.properties.nvalue = p ? parseInt(100000 * v / p) / 1000 : 0;
             v = $scope.normalize
               ? it.properties.nvalue
@@ -97,14 +104,19 @@ main = function($scope, $timeout, $interval){
               return min = v;
             }
           });
-          max = (ref$ = d3.max(map.topo.features, function(it){
+          max = d3.max(map.topo.features, function(it){
             if ($scope.normalize) {
               return it.properties.nvalue;
             } else {
               return it.properties.value;
             }
-          })) > 0.5 ? ref$ : 0.5;
-          min = (ref$ = min > 0.2 ? min : 0.2) < (ref1$ = max - 0.1) ? ref$ : ref1$;
+          });
+          if (min <= 0) {
+            min = 0.0001;
+          }
+          if (max <= 0) {
+            max = 0.2;
+          }
           map.heatmap = d3.scale.linear().domain([0, min, (min * 2 + max) / 2, max]).range(map.heatrange);
           towns.transition().duration(300).style({
             fill: function(it){
@@ -128,7 +140,7 @@ main = function($scope, $timeout, $interval){
           res$ = [];
           for (i$ = 0, to$ = domain[domain.length - 1], step$ = domain[domain.length - 1] / 10; step$ < 0 ? i$ >= to$ : i$ <= to$; i$ += step$) {
             i = i$;
-            res$.push(parseInt(10 * i) / 10);
+            res$.push(parseInt(i * 1000) / 1000);
           }
           htick = res$;
           x$ = svg.selectAll('rect.tick').data(htick);

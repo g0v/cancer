@@ -17,9 +17,11 @@ main = ($scope, $timeout, $interval) ->
       $scope.year-index = i
       break
     $scope.playing = $interval ->
-      $scope.curyear = $scope.years[$scope.year-index]
-      $scope.year-index++
-      if $scope.year-index >= $scope.years.length => $scope.year-index = 0
+      do =>
+        $scope.curyear = $scope.years[$scope.year-index]
+        $scope.year-index++
+        if $scope.year-index >= $scope.years.length => $scope.year-index = 0
+      while $scope.curyear <1991 and $scope.normalize
     , 200
   $scope.update-data = ->
     data = $scope.cancer-data $scope.map
@@ -49,12 +51,15 @@ main = ($scope, $timeout, $interval) ->
         [c,t] = it.properties.name.split \/
         mgyear = parseInt($scope.curyear) - 1911
         p = if popu[mgyear] => popu[mgyear][c][t] else 0
+        if t == "中西區" and !p and popu[mgyear] => p = popu[mgyear][c]["中區"] + popu[mgyear][c]["西區"]
         it.properties.nvalue = if p => parseInt(100000 * v / p)/1000 else 0
         v = if $scope.normalize =>  it.properties.nvalue else it.properties.value
         if v and (min == -1 or min > v) => min := v
         #if popu[mgyear] => console.log popu[mgyear][c][t], v, p, it.properties.nvalue
-    max = d3.max(map.topo.features, (-> if $scope.normalize => it.properties.nvalue else it.properties.value)) >? 0.5
-    min = min >? 0.2 <?max - 0.1
+    max = d3.max(map.topo.features, (-> if $scope.normalize => it.properties.nvalue else it.properties.value)) #>? 0.2
+    #min = min >? 0.2 <?max - 0.1
+    if min <=0 => min = 0.0001
+    if max <=0 => max = 0.2
     map.heatmap = d3.scale.linear!domain [0, min, (min*2 + max)/2, max] .range map.heatrange
     towns.transition!duration 300 .style do
       fill: -> map.heatmap if $scope.normalize => it.properties.nvalue else it.properties.value
@@ -65,7 +70,8 @@ main = ($scope, $timeout, $interval) ->
     {svg, heatmap, tickcount} = map
     htick = heatmap.ticks tickcount
     domain = heatmap.domain!
-    htick = [parseInt(10*i)/10 for i from 0 to domain[* - 1] by domain[* - 1]/10]
+    htick = [parseInt(i*1000)/1000 for i from 0 to domain[* - 1] by domain[* - 1]/10]
+    #htick = [parseInt(i*10)/10 for i from 0 to domain[* - 1] by domain[* - 1]/10]
     svg.selectAll \rect.tick .data htick 
       ..exit!remove!
       ..enter!append \rect

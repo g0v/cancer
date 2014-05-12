@@ -44,7 +44,7 @@ convert-csv = (infile, outfile) ->
   fs.write-file-sync outfile, (xlsjs.utils.make_csv(sheet, {FS: \,, RS: \\n}))
 
 batch-convert = ->
-  files = [ ["xls/#f", "csv/#{f.replace(/\.xls$/g, ".csv")}", "json/#{f.replace(/\.xls$/g, ".json")}"] for f in fs.readdir-sync(\xls/) ]filter(->/\.xls$/exec it.0)
+  files = [ ["xls/age/#f", "csv/age/#{f.replace(/\.xls$/g, ".csv")}", "json/age/#{f.replace(/\.xls$/g, ".json")}"] for f in fs.readdir-sync(\xls/) ]filter(->/\.xls$/exec it.0)
   for file in files
     if !fs.exists-sync(file.1) =>
       console.log "converting #{file.0} to csv"

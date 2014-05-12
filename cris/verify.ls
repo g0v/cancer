@@ -1,6 +1,6 @@
 require! <[fs]>
 
-files = ["csv/#f" for f in fs.readdir-sync(\csv)]
+files = ["csv/age/#f" for f in fs.readdir-sync(\csv)]
 all = []
 for file in files
   if ! /\.csv$/exec(file) => continue

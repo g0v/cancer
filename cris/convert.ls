@@ -9,7 +9,7 @@ for k,v of town.town
   town.town[k] = count
   count++
 
-files = ["json/#f" for f in fs.readdir-sync(\json)]
+files = ["json/age/#f" for f in fs.readdir-sync(\json)]
 data = {}
 types = {}
 for file in files

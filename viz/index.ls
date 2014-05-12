@@ -8,6 +8,10 @@ main = ($scope, $timeout, $interval) ->
   $scope.curdis = $scope.diseases.0
   $scope.playing = false
   $scope.year-index = 0
+
+  $scope.get-data-boundary = (cancer-type) !->
+    $scope.max-bound = d3.max [d3.max [d3.max [v for d,v of ts[cancer-type]] for year, ts of cancer.data]]
+    $scope.min-bound = 0
   $scope.stop = ->
     if $scope.playing => $interval.cancel $scope.playing
     $scope.playing = false
@@ -32,7 +36,9 @@ main = ($scope, $timeout, $interval) ->
     data = $scope.cancer-data $scope.map
     $scope.update-map $scope.map, data
   $scope.$watch 'curyear', -> $scope.update-data!
-  $scope.$watch 'curdis', -> $scope.update-data!
+  $scope.$watch 'curdis', -> 
+    $scope.get-data-boundary $scope.curdis
+    $scope.update-data!
   (rpi) <- d3.json \rpi.json
   $scope.$watch 'chosen' -> $scope.chosen-value = $scope.hash[$scope.chosen]
   $scope.$watch 'chosen' -> $scope.chosen-value = $scope.hash[$scope.chosen]
@@ -60,9 +66,13 @@ main = ($scope, $timeout, $interval) ->
         it.properties.nvalue = if p => parseInt(100000 * v / p)/1000 else 0
         v = if $scope.normalize =>  it.properties.nvalue else it.properties.value
         if v and (min == -1 or min > v) => min := v
+        it.properties.value = v or 0
         #if popu[mgyear] => console.log popu[mgyear][c][t], v, p, it.properties.nvalue
-    max = d3.max(map.topo.features, (-> if $scope.normalize => it.properties.nvalue else it.properties.value)) #>? 0.2
     #min = min >? 0.2 <?max - 0.1
+    # TODO: compare this and nvalue
+    #max = d3.max(map.topo.features, (-> if $scope.normalize => it.properties.nvalue else it.properties.value)) #>? 0.2
+    max = $scope.max-bound
+    min = min >? 1
     if min <=0 => min = 0.0001
     if max <=0 => max = 0.2
     map.heatmap = d3.scale.linear!domain [0, min, (min*2 + max)/2, max] .range map.heatrange

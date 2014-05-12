@@ -15,6 +15,26 @@ main = function($scope, $timeout, $interval){
       $scope.curdis = $scope.diseases[0];
       $scope.playing = false;
       $scope.yearIndex = 0;
+      $scope.getDataBoundary = function(cancerType){
+        var year, ts, d, v;
+        $scope.maxBound = d3.max([d3.max((function(){
+          var ref$, results$ = [];
+          for (year in ref$ = cancer.data) {
+            ts = ref$[year];
+            results$.push(d3.max((fn$())));
+          }
+          return results$;
+          function fn$(){
+            var ref$, results$ = [];
+            for (d in ref$ = ts[cancerType]) {
+              v = ref$[d];
+              results$.push(v);
+            }
+            return results$;
+          }
+        }()))]);
+        $scope.minBound = 0;
+      };
       $scope.stop = function(){
         if ($scope.playing) {
           $interval.cancel($scope.playing);
@@ -60,6 +80,7 @@ main = function($scope, $timeout, $interval){
         return $scope.updateData();
       });
       $scope.$watch('curdis', function(){
+        $scope.getDataBoundary($scope.curdis);
         return $scope.updateData();
       });
       return d3.json('rpi.json', function(rpi){
@@ -107,16 +128,12 @@ main = function($scope, $timeout, $interval){
               ? it.properties.nvalue
               : it.properties.value;
             if (v && (min === -1 || min > v)) {
-              return min = v;
+              min = v;
             }
+            return it.properties.value = v || 0;
           });
-          max = d3.max(map.topo.features, function(it){
-            if ($scope.normalize) {
-              return it.properties.nvalue;
-            } else {
-              return it.properties.value;
-            }
-          });
+          max = $scope.maxBound;
+          min = min > 1 ? min : 1;
           if (min <= 0) {
             min = 0.0001;
           }

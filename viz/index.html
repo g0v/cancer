@@ -21,12 +21,13 @@
     <script type="text/javascript" src="index.js"></script>
   </head>
   <body ng-app ng-controller="main">
+    <div class="title">全台各鄉鎮癌症個案數資料開放</div>
     <div class="row">
-      <div class="col-md-6">
-        <svg id="svg" width="800px" height="600px" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid"></svg>
+      <div class="col-sm-6">
+        <svg id="svg" width="100%" height="600px" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid"></svg>
       </div>
-      <div class="col-md-6">
-        <div id="chosen">{{chosen}}</div>
+      <div class="col-sm-6">
+        <div id="chosen">{{chosen}} / {{ chosenValue }}</div>
         <form class="form-inline">
           <div ng-click="play()" class="btn btn-default">play</div>
           <div ng-click="stop()" class="btn btn-default">stop</div>
@@ -39,9 +40,38 @@
             <select ng-model="curdis" style="min-width:300px" class="form-control">
               <option ng-repeat="d in diseases" value="{{d}}">{{d}}</option>
             </select>
-          </div>
+          </div><br>
+          <div style="margin-top:10px" class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="normalize"> 粗率
+            </label>
+          </div> &nbsp;  &nbsp;
+          <div style="margin-top:10px" class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="slower"> slower
+            </label>
+          </div><br>
+          <div style="-webkit-transform:scale(1.5) translate(17px,0);margin-top:10px" data-href="http://g0v.github.io/cancer/viz/" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true" class="fb-like"></div>
         </form>
+        <h3 style="font-family:'century gothic'">
+          <div class="note">請注意</div>
+        </h3>
+        <ul style="font-size:1.5em">
+          <li>除錯中，可能有錯，若發現問題請回饋至 <a href="https://g0v.hackpad.com/fj3KFYXmoY2">這裡</a></li>
+          <li>為什麼沒有台南市關廟區的資料？ 因為抓不下來:<br><img src="crash.png"></li>
+        </ul>
+        <hr>
       </div>
     </div>
+    <div id="fb-root"></div>
+    <script>
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/zh_TW/all.js#xfbml=1&appId=538062799648166";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
   </body>
 </html>

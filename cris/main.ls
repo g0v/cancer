@@ -27,14 +27,15 @@ convert-json = (infile, outfile) ->
         dis-idx.q[cells[i]] = i
         dis-idx.p[i] = cells[i]
         dis-list.push cells[i]
-      dis-val-cur = dis-val[year] = {}
+      if !dis-val[year] => dis-val[year] = {}
       continue
     if !start => continue
     ret = /(\d+)~\d+/exec cells[start]
     if !ret => continue
     age = ret.1
     for dis in dis-list
-      dis-val-cur.{}[dis][age] = parseInt(cells[dis-idx.q[dis]] or 0)
+      if !dis-val[year].{}[dis][age] => dis-val[year].{}[dis][age] = 0
+      dis-val[year].{}[dis][age] += parseInt(cells[dis-idx.q[dis]] or 0)
   fs.write-file-sync outfile, JSON.stringify(dis-val)
 
 convert-csv = (infile, outfile) ->
@@ -43,7 +44,7 @@ convert-csv = (infile, outfile) ->
   fs.write-file-sync outfile, (xlsjs.utils.make_csv(sheet, {FS: \,, RS: \\n}))
 
 batch-convert = ->
-  files = [ ["xls/#f", "csv/#{f.replace(/\.xls$/g, ".csv")}", "json/#{f.replace(/\.xls$/g, ".json")}"] for f in fs.readdir-sync(\xls/) ]filter(->/\.xls$/exec it.0)
+  files = [ ["xls/age/#f", "csv/age/#{f.replace(/\.xls$/g, ".csv")}", "json/age/#{f.replace(/\.xls$/g, ".json")}"] for f in fs.readdir-sync(\xls/age) ]filter(->/\.xls$/exec it.0)
   for file in files
     if !fs.exists-sync(file.1) =>
       console.log "converting #{file.0} to csv"

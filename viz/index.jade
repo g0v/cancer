@@ -21,6 +21,8 @@ html(lang="en")
     .row
       .col-sm-6
         svg#svg(width="100%",height="600px",viewBox="0 0 800 600",preserveAspectRatio="xMidYMid")
+          text(x="175",y="50",ng-show="!normalize") 人數
+          text(x="175",y="50",ng-show="normalize") %
       .col-sm-6
         #chosen {{chosen}} / {{ chosenValue }}
         form.form-inline
@@ -33,15 +35,18 @@ html(lang="en")
             select.form-control(ng-model="curdis",style="min-width:300px")
               option(ng-repeat="d in diseases",value="{{d}}") {{d}}
           br
-          .checkbox(style="margin-top:10px")
+          .checkbox(style="margin:10px 0 0 0 ")
             label
               input(type="checkbox",ng-model="normalize")
               |  粗率
-          |  &nbsp;  &nbsp;
-          .checkbox(style="margin-top:10px")
+          .checkbox(style="margin:10px 0 0 20px")
+            label
+              input(type="checkbox",ng-model="fixlegend")
+              |  固定比例尺
+          .checkbox(style="margin:10px 0 0 20px")
             label
               input(type="checkbox",ng-model="slower")
-              |  slower
+              |  慢一點
           br
           .fb-like(style="-webkit-transform:scale(1.5) translate(17px,0);margin-top:10px",data-href="http://g0v.github.io/cancer/viz/",data-layout="button_count",data-action="like",data-show-faces="true",data-share="true")
         h3(style="font-family:'century gothic'")

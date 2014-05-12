@@ -1,6 +1,6 @@
 main = ($scope, $timeout, $interval) ->
   $scope.chosen = "點地圖看值"
-  (popu) <- d3.json \population.json
+  (popu) <- d3.json \population-ad.json
   (cancer) <- d3.json \all-data.json
   $scope.years = [k for k of cancer.data]
   $scope.diseases = cancer.types
@@ -9,12 +9,19 @@ main = ($scope, $timeout, $interval) ->
   $scope.playing = false
   $scope.year-index = 0
 
+  _ratio = (v, year, d) -> 
+    [c,t] = cancer.townmap[d]split \/
+    if !popu[year] => return 0
+    if !popu[year][c][t] => return 0
+    return parseInt(10000 * v / popu[year][c][t]) / 100
   $scope.get-data-boundary = (cancer-type) !->
     $scope.max-bound = d3.max [d3.max [d3.max [v for d,v of ts[cancer-type]] for year, ts of cancer.data]]
+    $scope.max-bound-ratio = d3.max [d3.max [d3.max [_ratio(v,year,d) for d,v of ts[cancer-type]] for year, ts of cancer.data]]
     $scope.min-bound = 0
   $scope.stop = ->
     if $scope.playing => $interval.cancel $scope.playing
     $scope.playing = false
+  $scope.$watch 'normalize' -> $scope.update-data!
   $scope.$watch 'slower' ->
     if $scope.playing =>
       $scope.stop!
@@ -54,31 +61,24 @@ main = ($scope, $timeout, $interval) ->
       ret[item.properties.name] = Math.random!*1000
     ret
   $scope.update-map = (map, data) ->
-    min = -1
+    bound = min: 9007199254740992, max: 0
     towns = map.svg.selectAll \path.town
-      .each -> 
-        v = data[it.properties.name] or 0
-        it.properties.value = v
-        [c,t] = it.properties.name.split \/
-        mgyear = parseInt($scope.curyear) - 1911
-        p = if popu[mgyear] => popu[mgyear][c][t] else 0
-        if t == "中西區" and !p and popu[mgyear] => p = popu[mgyear][c]["中區"] + popu[mgyear][c]["西區"]
-        it.properties.nvalue = if p => parseInt(100000 * v / p)/1000 else 0
-        v = if $scope.normalize =>  it.properties.nvalue else it.properties.value
-        if v and (min == -1 or min > v) => min := v
-        it.properties.value = v or 0
-        #if popu[mgyear] => console.log popu[mgyear][c][t], v, p, it.properties.nvalue
-    #min = min >? 0.2 <?max - 0.1
-    # TODO: compare this and nvalue
-    #max = d3.max(map.topo.features, (-> if $scope.normalize => it.properties.nvalue else it.properties.value)) #>? 0.2
-    max = $scope.max-bound
-    min = min >? 1
-    if min <=0 => min = 0.0001
-    if max <=0 => max = 0.2
-    map.heatmap = d3.scale.linear!domain [0, min, (min*2 + max)/2, max] .range map.heatrange
+      .each ({properties: p}) -> 
+        [c,t] = p.name.split \/
+        p.value = data[p.name] or 0
+        p.population = if popu[parseInt($scope.curyear)] => that[c][t] else 0
+        p.ratio = if p.population => parseInt(10000 * p.value / p.population)/100 else 0
+        v = if $scope.normalize => p.ratio else p.value
+        bound.max >?= v
+        bound.min <?= v
+    if bound.max == 0 => bound.max = 1
+    if $scope.fixlegend => max = ( if $scope.normalize => $scope.max-bound-ratio else $scope.max-bound )
+    else max = bound.max
+    map.heatmap = d3.scale.linear!domain [0, max/3, max/2, max] .range map.heatrange
+    map.heatcolor = ({properties: p}) -> map.heatmap if $scope.normalize => p.ratio else p.value
     towns.transition!duration 300 .style do
-      fill: -> map.heatmap if $scope.normalize => it.properties.nvalue else it.properties.value
-      stroke: -> map.heatmap if $scope.normalize => it.properties.nvalue else it.properties.value
+      fill: -> map.heatcolor it
+      stroke: -> map.heatcolor it
     $scope.make-tick map
 
   $scope.make-tick = (map) ->
@@ -86,7 +86,6 @@ main = ($scope, $timeout, $interval) ->
     htick = heatmap.ticks tickcount
     domain = heatmap.domain!
     htick = [parseInt(i*1000)/1000 for i from 0 to domain[* - 1] by domain[* - 1]/10]
-    #htick = [parseInt(i*10)/10 for i from 0 to domain[* - 1] by domain[* - 1]/10]
     svg.selectAll \rect.tick .data htick 
       ..exit!remove!
       ..enter!append \rect

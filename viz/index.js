@@ -2,9 +2,9 @@
 var main;
 main = function($scope, $timeout, $interval){
   $scope.chosen = "點地圖看值";
-  return d3.json('population.json', function(popu){
+  return d3.json('population-ad.json', function(popu){
     return d3.json('all-data.json', function(cancer){
-      var res$, k;
+      var res$, k, _ratio;
       res$ = [];
       for (k in cancer.data) {
         res$.push(k);
@@ -15,6 +15,17 @@ main = function($scope, $timeout, $interval){
       $scope.curdis = $scope.diseases[0];
       $scope.playing = false;
       $scope.yearIndex = 0;
+      _ratio = function(v, year, d){
+        var ref$, c, t;
+        ref$ = cancer.townmap[d].split('/'), c = ref$[0], t = ref$[1];
+        if (!popu[year]) {
+          return 0;
+        }
+        if (!popu[year][c][t]) {
+          return 0;
+        }
+        return parseInt(10000 * v / popu[year][c][t]) / 100;
+      };
       $scope.getDataBoundary = function(cancerType){
         var year, ts, d, v;
         $scope.maxBound = d3.max([d3.max((function(){
@@ -33,6 +44,22 @@ main = function($scope, $timeout, $interval){
             return results$;
           }
         }()))]);
+        $scope.maxBoundRatio = d3.max([d3.max((function(){
+          var ref$, results$ = [];
+          for (year in ref$ = cancer.data) {
+            ts = ref$[year];
+            results$.push(d3.max((fn$())));
+          }
+          return results$;
+          function fn$(){
+            var ref$, results$ = [];
+            for (d in ref$ = ts[cancerType]) {
+              v = ref$[d];
+              results$.push(_ratio(v, year, d));
+            }
+            return results$;
+          }
+        }()))]);
         $scope.minBound = 0;
       };
       $scope.stop = function(){
@@ -41,6 +68,9 @@ main = function($scope, $timeout, $interval){
         }
         return $scope.playing = false;
       };
+      $scope.$watch('normalize', function(){
+        return $scope.updateData();
+      });
       $scope.$watch('slower', function(){
         if ($scope.playing) {
           $scope.stop();
@@ -111,46 +141,50 @@ main = function($scope, $timeout, $interval){
           return ret;
         };
         $scope.updateMap = function(map, data){
-          var min, towns, max;
-          min = -1;
-          towns = map.svg.selectAll('path.town').each(function(it){
-            var v, ref$, c, t, mgyear, p;
-            v = data[it.properties.name] || 0;
-            it.properties.value = v;
-            ref$ = it.properties.name.split('/'), c = ref$[0], t = ref$[1];
-            mgyear = parseInt($scope.curyear) - 1911;
-            p = popu[mgyear] ? popu[mgyear][c][t] : 0;
-            if (t === "中西區" && !p && popu[mgyear]) {
-              p = popu[mgyear][c]["中區"] + popu[mgyear][c]["西區"];
-            }
-            it.properties.nvalue = p ? parseInt(100000 * v / p) / 1000 : 0;
+          var bound, towns, max;
+          bound = {
+            min: 9007199254740992,
+            max: 0
+          };
+          towns = map.svg.selectAll('path.town').each(function(arg$){
+            var p, ref$, c, t, that, v;
+            p = arg$.properties;
+            ref$ = p.name.split('/'), c = ref$[0], t = ref$[1];
+            p.value = data[p.name] || 0;
+            p.population = (that = popu[parseInt($scope.curyear)]) ? that[c][t] : 0;
+            p.ratio = p.population ? parseInt(10000 * p.value / p.population) / 100 : 0;
             v = $scope.normalize
-              ? it.properties.nvalue
-              : it.properties.value;
-            if (v && (min === -1 || min > v)) {
-              min = v;
-            }
-            return it.properties.value = v || 0;
+              ? p.ratio
+              : p.value;
+            bound.max >= v || (bound.max = v);
+            return (ref$ = bound.min) <= v
+              ? ref$
+              : bound.min = v;
           });
-          max = $scope.maxBound;
-          min = min > 1 ? min : 1;
-          if (min <= 0) {
-            min = 0.0001;
+          if (bound.max === 0) {
+            bound.max = 1;
           }
-          if (max <= 0) {
-            max = 0.2;
+          if ($scope.fixlegend) {
+            max = $scope.normalize
+              ? $scope.maxBoundRatio
+              : $scope.maxBound;
+          } else {
+            max = bound.max;
           }
-          map.heatmap = d3.scale.linear().domain([0, min, (min * 2 + max) / 2, max]).range(map.heatrange);
+          map.heatmap = d3.scale.linear().domain([0, max / 3, max / 2, max]).range(map.heatrange);
+          map.heatcolor = function(arg$){
+            var p;
+            p = arg$.properties;
+            return map.heatmap($scope.normalize
+              ? p.ratio
+              : p.value);
+          };
           towns.transition().duration(300).style({
             fill: function(it){
-              return map.heatmap($scope.normalize
-                ? it.properties.nvalue
-                : it.properties.value);
+              return map.heatcolor(it);
             },
             stroke: function(it){
-              return map.heatmap($scope.normalize
-                ? it.properties.nvalue
-                : it.properties.value);
+              return map.heatcolor(it);
             }
           });
           return $scope.makeTick(map);
